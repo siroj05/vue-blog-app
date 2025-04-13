@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ListPost from '../components/ListPost.vue'
 import DetialPostView from '@/views/DetialPostView.vue'
+import PostListView from '@/views/PostListView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -8,7 +9,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: ListPost,
+      component: PostListView,
     },
     {
       path: '/post/:id',

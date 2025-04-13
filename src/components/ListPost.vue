@@ -16,12 +16,12 @@ watchEffect(() => {
     loading.value = true
     try {
       const res = await fetch(
-        `https://dummyjson.com/posts/search?limit=${limit}&skip=${limit * pagination.value - limit}&q=${route.query.q}`,
+        `https://dummyjson.com/posts/search?limit=${limit}&skip=${limit * Number(route.query.page || 1) - limit}&q=${route.query.q || ''}`,
       )
       if (!res.ok) throw new Error('Failed to fetch')
       data.value = await res.json()
-    } catch (error) {
-      // messageError.value = error?.message ?? ''
+    } catch (error: any) {
+      messageError.value = error?.message ?? ''
     } finally {
       loading.value = false
     }
@@ -35,12 +35,15 @@ watch(pagination, (newVal) => {
 
 const onSubmit = () => {
   router.push({ query: { ...route.query, page: 1, q: search.value } })
+  pagination.value = 1
 }
 </script>
 
 <template>
-  <h1>Post List</h1>
-  <SearchInput v-model:search="search" @onSubmit="onSubmit" />
+  <div class="action-layout">
+    <SearchInput v-model:search="search" @onSubmit="onSubmit" />
+    <button>Create</button>
+  </div>
   <div v-if="loading">Loading...</div>
   <div v-else v-for="item in data?.posts" :key="item.id">
     <router-link :to="{ name: 'detail', params: { id: item.id } }">
@@ -51,11 +54,15 @@ const onSubmit = () => {
   <div class="pagination">
     <button :disabled="pagination <= 1" @click="pagination--"><</button>
     {{ pagination }}
-    <button :disabled="pagination == data.posts.length" @click="pagination++">></button>
+    <button :disabled="pagination == data?.posts?.length" @click="pagination++">></button>
   </div>
 </template>
 
 <style>
+.action-layout {
+  display: flex;
+  justify-content: space-between;
+}
 .text-justify {
   text-align: justify;
 }
