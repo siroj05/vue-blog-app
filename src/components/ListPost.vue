@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted, watchEffect, watch } from 'vue'
+import { ref, watchEffect, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import SearchInput from './SearchInput.vue'
 const route = useRoute()
 const router = useRouter()
 const data = ref()
@@ -8,32 +9,38 @@ const loading = ref(false)
 const messageError = ref(null)
 const limit = 10
 const pagination = ref(Number(route.query.page || 1))
+const search = ref(route.query.q || '')
 
-const fetchData = async () => {
-  loading.value = true
-  try {
-    const res = await fetch(
-      `https://dummyjson.com/posts?limit=${limit}&skip=${limit * pagination.value}`,
-    )
-    if (!res.ok) throw new Error('Failed to fetch')
-    data.value = await res.json()
-  } catch (error) {
-    // messageError.value = error?.message ?? ''
-  } finally {
-    loading.value = false
+watchEffect(() => {
+  const fetchData = async () => {
+    loading.value = true
+    try {
+      const res = await fetch(
+        `https://dummyjson.com/posts/search?limit=${limit}&skip=${limit * pagination.value - limit}&q=${route.query.q}`,
+      )
+      if (!res.ok) throw new Error('Failed to fetch')
+      data.value = await res.json()
+    } catch (error) {
+      // messageError.value = error?.message ?? ''
+    } finally {
+      loading.value = false
+    }
   }
-}
-
-watch(pagination, (newPage) => {
-  router.push({ query: { ...route.query, page: newPage.toString() } })
   fetchData()
 })
 
-onMounted(fetchData)
+watch(pagination, (newVal) => {
+  router.push({ query: { ...route.query, page: newVal.toString() } })
+})
+
+const onSubmit = () => {
+  router.push({ query: { ...route.query, page: 1, q: search.value } })
+}
 </script>
 
 <template>
   <h1>Post List</h1>
+  <SearchInput v-model:search="search" @onSubmit="onSubmit" />
   <div v-if="loading">Loading...</div>
   <div v-else v-for="item in data?.posts" :key="item.id">
     <router-link :to="{ name: 'detail', params: { id: item.id } }">
@@ -44,7 +51,7 @@ onMounted(fetchData)
   <div class="pagination">
     <button :disabled="pagination <= 1" @click="pagination--"><</button>
     {{ pagination }}
-    <button @click="pagination++">></button>
+    <button :disabled="pagination == data.posts.length" @click="pagination++">></button>
   </div>
 </template>
 
