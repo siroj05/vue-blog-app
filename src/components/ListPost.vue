@@ -42,7 +42,9 @@ const onSubmit = () => {
 <template>
   <div class="action-layout">
     <SearchInput v-model:search="search" @onSubmit="onSubmit" />
-    <button>Create</button>
+    <RouterLink to="/post/add">
+      <button>Create</button>
+    </RouterLink>
   </div>
   <div v-if="loading">Loading...</div>
   <div v-else v-for="item in data?.posts" :key="item.id">
