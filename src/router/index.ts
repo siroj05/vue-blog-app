@@ -3,6 +3,7 @@ import ListPost from '../components/ListPost.vue'
 import DetialPostView from '@/views/DetialPostView.vue'
 import PostListView from '@/views/PostListView.vue'
 import CreatePostsView from '@/views/CreatePostsView.vue'
+import EditPostView from '@/views/EditPostView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -21,6 +22,11 @@ const router = createRouter({
       path: '/post/add',
       name: 'create',
       component: CreatePostsView,
+    },
+    {
+      path: '/post/:id/edit',
+      name: 'edit',
+      component: EditPostView,
     },
   ],
 })

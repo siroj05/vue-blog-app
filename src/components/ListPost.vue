@@ -2,6 +2,7 @@
 import { ref, watchEffect, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SearchInput from './SearchInput.vue'
+import Action from './Action.vue'
 const route = useRoute()
 const router = useRouter()
 const data = ref()
@@ -48,9 +49,12 @@ const onSubmit = () => {
   </div>
   <div v-if="loading">Loading...</div>
   <div v-else v-for="item in data?.posts" :key="item.id">
-    <router-link :to="{ name: 'detail', params: { id: item.id } }">
-      <h2>{{ item.title }}</h2>
-    </router-link>
+    <div class="action-post">
+      <router-link :to="{ name: 'detail', params: { id: item.id } }">
+        <h2>{{ item.title }}</h2>
+      </router-link>
+      <Action :id="item.id" />
+    </div>
     <p class="text-justify">{{ item.body }}</p>
   </div>
   <div class="pagination">
@@ -61,6 +65,10 @@ const onSubmit = () => {
 </template>
 
 <style>
+.action-post {
+  display: flex;
+  justify-content: space-between;
+}
 .action-layout {
   display: flex;
   justify-content: space-between;
