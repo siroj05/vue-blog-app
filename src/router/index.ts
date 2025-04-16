@@ -1,18 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import ListPost from '../components/ListPost.vue'
-import DetialPostView from '@/views/DetialPostView.vue'
 import PostListView from '@/views/PostListView.vue'
 import CreatePostsView from '@/views/CreatePostsView.vue'
 import EditPostView from '@/views/EditPostView.vue'
 import Navbar from '@/components/Navbar.vue'
+import DetailPost from '@/components/DetailPost.vue'
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
       path: '/',
-      component : Navbar,
-      children : [
+      component: Navbar,
+      children: [
         {
           path: '/',
           name: 'home',
@@ -21,7 +20,7 @@ const router = createRouter({
         {
           path: '/post/:id',
           name: 'detail',
-          component: DetialPostView,
+          component: DetailPost,
         },
         {
           path: '/post/add',
@@ -33,8 +32,8 @@ const router = createRouter({
           name: 'edit',
           component: EditPostView,
         },
-      ]
-    }
+      ],
+    },
   ],
 })
 

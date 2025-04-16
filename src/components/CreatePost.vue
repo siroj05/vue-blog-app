@@ -36,7 +36,7 @@ const onSubmit = async () => {
       </div>
       <div class="form-input">
         <label for="desc">Description</label>
-        <input id="desc" name="desc" type="text" v-model="desc" required />
+        <textarea id="desc" name="desc" type="text" v-model="desc" required />
       </div>
       <div class="position-btn">
         <button :disabled="loading" class="post-btn">{{ loading ? 'Posting..' : 'Post' }}</button>
