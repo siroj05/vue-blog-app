@@ -72,6 +72,7 @@ const onSubmit = () => {
 .action-layout {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 50px;
 }
 .text-justify {
   text-align: justify;
