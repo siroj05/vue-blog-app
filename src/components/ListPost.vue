@@ -1,37 +1,19 @@
 <script setup lang="ts">
-import { ref, watchEffect, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SearchInput from './SearchInput.vue'
 import Action from './Action.vue'
+import { usePosts } from '@/composable/usePosts'
+import ErrorMessage from './ErrorMessage.vue'
 const route = useRoute()
 const router = useRouter()
-const data = ref()
-const loading = ref(false)
-const messageError = ref(null)
-const limit = 10
 const pagination = ref(Number(route.query.page || 1))
-const search = ref(route.query.q || '')
+const search = ref(route.query.q?.toString() || '')
 
-watchEffect(() => {
-  const fetchData = async () => {
-    loading.value = true
-    try {
-      const res = await fetch(
-        `https://dummyjson.com/posts/search?limit=${limit}&skip=${limit * Number(route.query.page || 1) - limit}&q=${route.query.q || ''}`,
-      )
-      if (!res.ok) throw new Error('Failed to fetch')
-      data.value = await res.json()
-    } catch (error: any) {
-      messageError.value = error?.message ?? ''
-    } finally {
-      loading.value = false
-    }
-  }
-  fetchData()
-})
+const {data, loading, error, success} = usePosts()
 
 watch(pagination, (newVal) => {
-  router.push({ query: { ...route.query, page: newVal.toString() } })
+  router.push({ query: { ...route.query, page: newVal.toString(), q : search.value } })
 })
 
 const onSubmit = () => {
@@ -47,20 +29,25 @@ const onSubmit = () => {
       <button>Create</button>
     </RouterLink>
   </div>
-  <div v-if="loading">Loading...</div>
-  <div v-else v-for="item in data?.posts" :key="item.id">
-    <div class="action-post">
-      <router-link :to="{ name: 'detail', params: { id: item.id } }">
-        <h2>{{ item.title }}</h2>
-      </router-link>
-      <Action :id="item.id" />
+  <div v-if="success">
+    <div v-if="loading">Loading...</div>
+    <div v-else v-for="item in data?.posts" :key="item.id">
+      <div class="action-post">
+        <router-link :to="{ name: 'detail', params: { id: item.id } }">
+          <h2>{{ item.title }}</h2>
+        </router-link>
+        <Action :id="item.id" />
+      </div>
+      <p class="text-justify">{{ item.body }}</p>
     </div>
-    <p class="text-justify">{{ item.body }}</p>
+    <div class="pagination">
+      <button :disabled="pagination <= 1" @click="pagination--"><</button>
+      {{ pagination }}
+      <button :disabled="pagination == data?.posts?.length" @click="pagination++">></button>
+    </div>
   </div>
-  <div class="pagination">
-    <button :disabled="pagination <= 1" @click="pagination--"><</button>
-    {{ pagination }}
-    <button :disabled="pagination == data?.posts?.length" @click="pagination++">></button>
+  <div v-else>
+    <ErrorMessage :error="error" />
   </div>
 </template>
 
