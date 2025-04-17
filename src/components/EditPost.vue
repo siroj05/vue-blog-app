@@ -15,7 +15,7 @@ onMounted(async () => {
     const data = await res.json()
     title.value = data.title
     desc.value = data.body
-  } catch (error) {
+  } catch (error: any) {
     loading.value = false
     throw new Error(error)
   } finally {
@@ -34,8 +34,7 @@ const onSubmit = async () => {
         body: desc.value,
       }),
     })
-    console.log(await res.json())
-  } catch (error) {
+  } catch (error: any) {
     submiting.value = false
     throw new Error(error)
   } finally {
